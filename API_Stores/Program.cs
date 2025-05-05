@@ -16,12 +16,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //
 builder.Services.AddScoped<IProductService, S_Product>();
+builder.Services.AddScoped<IStoreService, S_Store>();
+builder.Services.AddScoped<IStoreProductService, S_StoreProduct>();
 
 //Connect DB
 builder.Services.AddDbContext<StoresDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("StoresDB")));
-/*builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<StoresDbContext>()
-    .AddDefaultTokenProviders();*/
+    .AddDefaultTokenProviders();
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {

@@ -25,10 +25,8 @@ namespace API_Stores.Services
                 {
                     p.Id,
                     p.Name,
-                    
                     p.Description,
                     p.ImgUrl,
-                    
                     Category = new { p.Category.Name }
                 })
                 .ToListAsync();
@@ -42,11 +40,9 @@ namespace API_Stores.Services
                 .Select(p => new MRes_Product
                 {
                     Id = p.Id,
-                    Ten = p.Name,
-                    
-                    MoTa = p.Description,
-                    
-                    Loai = p.Category.Name
+                    Name = p.Name,
+                    Description = p.Description,
+                    Category = p.Category.Name
                 })
                 .ToListAsync();
         }
@@ -83,11 +79,9 @@ namespace API_Stores.Services
                 .Select(p => new MRes_Product
                 {
                     Id = p.Id,
-                    Ten = p.Name,
-
-                    MoTa = p.Description,
-
-                    Loai = p.Category.Name
+                    Name = p.Name,
+                    Description = p.Description,
+                    Category = p.Category.Name
                 })
                 .ToListAsync();
 
@@ -109,10 +103,7 @@ namespace API_Stores.Services
                 {
                     p.Id,
                     p.Name,
-
                     p.Description,
-                    
-                    
                     Category = new { p.Category.Name }
                 })
                 .FirstOrDefaultAsync();
@@ -207,7 +198,7 @@ namespace API_Stores.Services
             {               
                 var product = new Product
                 {
-                    Name = req.Name,
+                    Name = req.Name!,
                     Description = req.Description,
                     ImgUrl = req.ImgUrl,
                     CategoryId = req.CategoryId,
@@ -237,6 +228,23 @@ namespace API_Stores.Services
             await _context.SaveChangesAsync();
             return true;
         }
-    }
+        public async Task<IEnumerable<object>> GetProductsByStoreAsync(int storeId)
+        {
+            return await _context.StoreProducts
+                .Where(sp => sp.StoreId == storeId)
+                .Include(sp => sp.Product)
+                .ThenInclude(p => p.Category)
+                .Select(sp => new
+                {
+                    ProductId = sp.ProductId,
+                    ProductName = sp.Product.Name,
+                    Description = sp.Product.Description,
+                    Category = sp.Product.Category.Name,
+                    Price = sp.Price,
+                    Quantity = sp.Quantity
+                })
+                .ToListAsync();
+        }
 
+    }
 }

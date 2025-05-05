@@ -4,11 +4,11 @@
     {
         public int Id { get; set; }
 
-        public string Ten { get; set; } = null!;
+        public string Name { get; set; } = null!;
 
-        public string? MoTa { get; set; }
+        public string? Description { get; set; }
 
-        public string Loai { get; set; } = null!;
+        public string Category { get; set; } = null!;
 
 
     }
