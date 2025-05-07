@@ -9,6 +9,8 @@ using API_Stores.Models;
 using API_Stores.Models.Request;
 using API_Stores.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace API_Stores.Controllers
 {
@@ -17,10 +19,11 @@ namespace API_Stores.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
-
+        
         public ProductController(IProductService service)
         {
             _productService = service;
+            
         }
 
         [HttpGet]
@@ -116,6 +119,20 @@ namespace API_Stores.Controllers
                 return NotFound($"No products found for store with ID {storeId}.");
             return Ok(products);
         }
+
+        [HttpGet("sp_ProductAndCategory")]
+        public async Task<IActionResult> GetProductAndCategory()
+        {
+            var productsAndCategories=await _productService.GetProductAndCategoryAsync();
+            return Ok(productsAndCategories);
+        }
+        [HttpGet("sp_SearchProduct")]
+        public async Task<IActionResult> SearchProduct(string keyword)
+        {
+            var productsAndCategories = await _productService.SearchProductAsync(keyword);
+            return Ok(productsAndCategories);
+        }
+
 
     }
 }

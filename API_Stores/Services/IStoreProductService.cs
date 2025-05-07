@@ -11,5 +11,6 @@ namespace API_Stores.Services
         Task<StoreProduct> CreateStoreProductAsync(MReq_StoreProduct reqStoreProduct);
         Task<bool> UpdateStoreProductAsync(int id, MReq_StoreProduct reqStoreProduct);
         Task<bool> DeleteStoreProductAsync(int id);
+        
     }
 }

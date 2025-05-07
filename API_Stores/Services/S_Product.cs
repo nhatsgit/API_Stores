@@ -4,16 +4,20 @@ using API_Stores.Models.Respone;
 using API_Stores.Models;
 using API_Stores.ExtensionMethods;
 using Azure.Core;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace API_Stores.Services
 {
     public class S_Product : IProductService
     {
         private readonly StoresDbContext _context;
+        private readonly IConfiguration _config;
 
-        public S_Product(StoresDbContext context)
+        public S_Product(StoresDbContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
 
         public async Task<IEnumerable<object>> GetProductsAsync()
@@ -245,6 +249,82 @@ namespace API_Stores.Services
                 })
                 .ToListAsync();
         }
+
+        public async Task<object> GetProductAndCategoryAsync()
+        {
+            var connection = new SqlConnection(_config["ConnectionStrings:StoresDB"]);
+            var command = new SqlCommand("sp_GetProductAndCategory", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            var productList = new List<object>();
+            var categoryList = new List<object>();
+
+            await connection.OpenAsync();
+            var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                productList.Add(new
+                {
+                    Id = reader["id"],
+                    Name = reader["name"],
+                    Description = reader["description"],
+                    ImgUrl = reader["img_url"],
+                    CategoryId = reader["category_id"],
+                    CreatedAt = reader["created_at"]
+                });
+            }
+
+            if (await reader.NextResultAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    categoryList.Add(new
+                    {
+                        Id = reader["id"],
+                        Name = reader["name"],
+                        CreatedAt = reader["created_at"]
+                    });
+                }
+            }
+
+            await connection.CloseAsync();
+            return new { Products = productList, Categories = categoryList };
+        }
+
+        public async Task<object> SearchProductAsync(string? keyword)
+        {
+            var result = new List<object>();
+            var connection = new SqlConnection(_config["ConnectionStrings:StoresDB"]);
+
+            using var command = new SqlCommand("SearchProductByName", connection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            command.Parameters.AddWithValue("@keyword", keyword ?? "");
+
+            await connection.OpenAsync();
+            using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                result.Add(new
+                {
+                    Name = reader["name"].ToString(),
+                    Description = reader["description"].ToString(),
+                    ImgUrl = reader["img_url"].ToString(),
+                    Category = reader["category"].ToString()
+                });
+            }
+
+            await connection.CloseAsync();
+            return result;
+        }
+        
+
 
     }
 }

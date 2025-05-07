@@ -19,6 +19,8 @@ namespace API_Stores.Services
         Task<List<Product>> AddRangeAsync(List<MReq_Product> reqProducts);
         Task<bool> DeleteAsync(int id);
         Task<IEnumerable<object>> GetProductsByStoreAsync(int storeId);
+        Task<object> GetProductAndCategoryAsync();
 
+        Task<object> SearchProductAsync(string? keyword);
     }
 }

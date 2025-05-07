@@ -134,5 +134,19 @@ namespace API_Stores.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<IEnumerable<object>> GetStoreRevenuesAsync()
+        {
+            var result = await _context.Stores
+                .Select(store => new 
+                {
+                    StoreId = store.Id,
+                    StoreName = store.Name,
+                    TotalRevenue = store.Invoices.Sum(i => i.TotalPrice)
+                })
+                .ToListAsync();
+
+            return result;
+        }
     }
 }

@@ -13,5 +13,6 @@ namespace API_Stores.Services
         Task<bool> UpdateStoreAsync(int id, Store store);
         Task<Store?> UpdatePartialAsync(int id, MReq_Store reqStore);
         Task<bool> DeleteStoreAsync(int id);
+        Task<IEnumerable<object>> GetStoreRevenuesAsync();
     }
 }

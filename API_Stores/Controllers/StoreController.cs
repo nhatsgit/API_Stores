@@ -83,5 +83,11 @@ namespace API_Stores.Controllers
                 return BadRequest(new { Message = ex.Message });
             }
         }
+        [HttpGet("StoreRevenues")]
+        public async Task<IActionResult> GetStoreRevenues()
+        {
+            var data = await _storeService.GetStoreRevenuesAsync();
+            return Ok(data);
+        }
     }
 }
